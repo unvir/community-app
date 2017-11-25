@@ -34,3 +34,15 @@ var Notify = {
             clearTimeout(arguments[1])
     }
 };
+
+window.addEventListener("load", () => {
+    try{
+        VK.init(function() {
+            Notify.generate('JS SDK Connection', 'success');
+        }, function() {
+            Notify.generate('JS SDK Connection', 'fail');
+        });
+    } catch(e) {
+        Notify.generate('Error', e.message);
+    }
+}, '5.69');
