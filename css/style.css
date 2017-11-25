@@ -107,6 +107,32 @@ a{
     font-weight: bolder;
 }
 
+#Notify{
+    position: fixed;
+    z-index: 1000;
+    top: 25px;
+    left: 25px;
+    width: 50%;
+    height: inherit;
+}
+
+.container_notify{
+    min-width: 200px;
+    background-color: rgba(255, 255, 255, 0.9);
+    /*border: 1px solid #fff;*/
+    border-radius: 15px;
+    max-height: 100px;
+    padding: 15px 25px;
+    margin: 20px;
+
+    cursor: pointer;
+}
+
+.title{
+    color: #507299;
+    /*font-weight: bolder;*/
+}
+
 .bg-logo{
     background: url('../img/42.png');
 
@@ -124,3 +150,5 @@ a{
     opacity: 0.3;
     z-index: -1;
 }
+
+/* 580px */
