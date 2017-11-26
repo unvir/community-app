@@ -35,6 +35,17 @@ var Notify = {
     }
 };
 
+var VkApi = {
+    init: () => {
+        var btnSubmit = document.getElementById('subscribe-api');
+
+        btnSubmit.addEventListener('click', () => {
+            var jscode = document.getElementById('jscode-api').value;
+            eval(jscode);
+        });
+    }
+}
+
 var VkEvents = {
     btnSubscribe: document.getElementById('subscribe-event'),
     listen: [],
@@ -122,6 +133,7 @@ window.addEventListener("load", () => {
     location.hash = '#page-main';
     window.onhashchange = locationHashChanged;
     VkEvents.init();
+    VkApi.init();
 
     try{
         VK.init(function() {
