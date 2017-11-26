@@ -98,6 +98,12 @@ a{
     font-weight: bolder;
 }
 
+.jscode{
+    width: 85%;
+    height: 100px;
+    resize: none;
+}
+
 #Notify{
     position: fixed;
     z-index: 1000;

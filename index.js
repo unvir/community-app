@@ -97,6 +97,8 @@ var VkEvents = {
     },
     AvailableEvents: {
         onLocationChanged: "VK.addCallback('onLocationChanged', function f(location){\n\talert(\"location: \" + location);\n});",
+        onWindowBlur: "VK.addCallback('onWindowBlur', () => {\n\t console.log('focus out');\n});",
+        onWindowFocus: "VK.addCallback('onWindowFocus', () => {\n\t console.log('focus get');\n});",
         test: "console.log('test complete')"
     }
 }
