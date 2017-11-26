@@ -32,7 +32,7 @@
 
       <div class="container_content" id="page-event">
         <p class="notice">
-            Выберите событие, чтобы подписаться на <a href="#hello">него</a>
+            Выберите событие, чтобы подписаться на него
         </p>
 
         <select id="picker-event">
@@ -40,10 +40,7 @@
             <option>onLocationChanged</option>
             <option>test</option>
         </select>
-        <textarea name="name" rows="8" cols="70" id="jscode-event">
-VK.addCallback('onLocationChanged', function f(location){
-    alert("location: " + location);
-});</textarea>
+        <textarea name="name" rows="8" cols="70" id="jscode-event"></textarea>
         <button id="subscribe-event">Подписаться</button>
       </div>
 

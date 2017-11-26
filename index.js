@@ -55,7 +55,7 @@ var VkEvents = {
                 VkEvents.btnSubscribe.innerHTML = 'Подписаться';
             }
 
-            document.getElementById('jscode-event').innerHTML = VkEvents.AvailableEvents[pickedEvent];
+            document.getElementById('jscode-event').value = VkEvents.AvailableEvents[pickedEvent];
         });
 
         // Обработка нажатия на кнопку
@@ -81,12 +81,12 @@ var VkEvents = {
     },
     subscribe: (eventname) => {
         if(VkEvents.isAvailable(eventname)){
-            eval(VkEvents.AvailableEvents[eventname]);
+            eval(document.getElementById('jscode-event').value);
             VkEvents.listen.push(eventname);
         }
     },
     unsubscribe: (eventname) => {
-        VkEvents.listen.splice( VkEvents.listen.indexOf(pickedEvent), 1 );
+        VkEvents.listen.splice( VkEvents.listen.indexOf(eventname), 1 );
 
         //TODO Храинлище функций обработчиков
     },
