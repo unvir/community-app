@@ -38,12 +38,274 @@ var Notify = {
 var VkApi = {
     init: () => {
         var btnSubmit = document.getElementById('subscribe-api');
+        var pickerMethod = document.getElementById('picker-api');
 
+        // Нажатие на кнопку "выполнить"
         btnSubmit.addEventListener('click', () => {
             var jscode = document.getElementById('jscode-api').value;
-            eval(jscode);
+
+            if(VkApi.checkTemplate(jscode)){ // СМ КОММЕНТАРИЙ К ФУНКЦИИ
+                eval(jscode);
+            }
         });
-    }
+
+        pickerMethod.addEventListener('change', () => {
+            var methodName = document.getElementById('picker-api').value;
+
+            VkApi.Methods.forEach(function(elem){
+                if(elem.name === methodName && elem.available)
+                {
+                    document.getElementById('jscode-api').value = VkApi.genTemplate(elem);
+                    document.getElementById('description-api').innerHTML = '';
+
+                    if(elem.params.length)
+                        elem.params.forEach(function(elem){
+                            if(elem.description.length > 3)
+                                document.getElementById('description-api').innerHTML += '<b>' + elem.name + '</b>: <small>' + elem.description + '</small><br>';
+                        });
+
+                    return;
+                }
+            });
+
+
+        });
+
+        VkApi.Methods.forEach(function(elem){
+            if(elem.available)
+            {
+                var newElem = document.createElement('option');
+                    newElem.innerHTML = elem.name;
+                    pickerMethod.appendChild(newElem);
+            }
+        });
+    },
+    checkTemplate: function(code){ //Не корректно работает с пробелами: убрать trim и пофиксить маску
+        var isValid = true;
+
+        var mask = /\s|\u00A0/g;
+        var res = code.replace(mask, ''); // full trim
+
+            mask = /VK.callMethod\(\"([a-zA-Z]+)\"([a-zA-Zа-яА-Я0-9\.\,\!\?\:\;\"\*\(\)]*)\)\;/;
+            res = res.match(mask);
+
+        var methodName = res[1];
+        var ps = res[2]; //paramsString
+
+        for(var j = 0; j < VkApi.Methods.length; j++){
+            var elem = VkApi.Methods[j];
+            if(elem.name === methodName && elem.available)
+            {
+                if(elem.params.length > 0)
+                    for(var it = 0; it < elem.params.length; it++){
+                        // убираем запятую в начале
+                        if(ps[0] == ','){
+                            ps = ps.substr(1);
+                        } else {
+                            isValid = false;
+                            return;
+                        }
+
+                        switch (elem.params[it].type) {
+                            case "string":
+                                if(ps[0] == '"' && ps.lastIndexOf('"') != 0){
+                                    ps = ps.substr( ps.indexOf('"', 1) + 1 ); // переходим ко второй закрывающей ковычке
+                                } else {
+                                    return false;
+                                }
+                                break;
+                            case "integer":
+                                var finish = ps.indexOf(',') == -1 ? ps.length : ps.indexOf(',');
+
+                                for(var i = 0; i < finish; i++)
+                                {
+                                    var code = ps.charCodeAt(i)
+                                    if(code >= 48 && code <= 57) continue;
+
+                                    return false;
+                                }
+
+                                ps = ps.substr(finish);
+                                break;
+                            case "bool":
+                                var finish = ps.indexOf(',') == -1 ? ps.length : ps.indexOf(',');
+
+                                if(ps.substring(0,finish) == "true" || ps.substring(0,finish) == "false")
+                                {
+                                    ps = ps.substr(finish);
+                                    break;
+                                }
+
+                                return false;
+                                break;
+                            default:
+                                return false;
+                        }
+                    }
+                break;
+            }
+        }
+        return isValid;
+    },
+    genTemplate: (elem) => {
+        var res = 'VK.callMethod("' + elem.name + '"';
+
+        if(elem.params.length)
+            elem.params.forEach(function(elem){
+                if( elem.type == "string" )
+                    res += ', "' + elem.default + '"';
+                else
+                    res += ', ' + elem.default;
+            });
+
+        res += ');'
+
+        return res;
+    },
+    Methods: [
+        {
+            name: "showInstallBox",
+            available: true,
+            params: { }
+        },
+        {
+            name: "showSettingsBox",
+            available: true,
+            params: [
+                {
+                    name: "settings",
+                    description: "Параметр settings — это битовая маска запрашиваемых <a href=\"https://vk.com/dev/permissions\" target=\"_blank\">прав доступа</a>",
+                    required: true,
+                    type: "integer",
+                    default: 8214
+                }
+            ]
+        },
+        {
+            name: "showGroupSettingsBox",
+            available: true,
+            params: [
+                {
+                    name: "settings",
+                    description: "Параметр settings — это битовая маска запрашиваемых <a href=\"https://vk.com/dev/permissions\" target=\"_blank\">прав доступа</a>",
+                    required: true,
+                    type: "integer",
+                    default: 4096
+                }
+            ]
+        },
+        {
+            name: "showRequestBox",
+            available: true,
+            params: [
+                {
+                    name: "user_id",
+                    description: "Запрос отправляется пользователю user_id (должен быть другом текущего пользователя)",
+                    required: true,
+                    type: "integer",
+                    default: 123456789
+                },
+                {
+                    name: "message",
+                    description: "С текстом message",
+                    required: true,
+                    type: "string",
+                    default: "Hello!"
+                },
+                {
+                    name: "requestKey",
+                    description: "И произвольным дополнительным параметром requestKey",
+                    required: true,
+                    type: "string",
+                    default: "myRequestKey"
+                }
+            ]
+        },
+        {
+            name: "showInviteBox",
+            available: true,
+            params: []
+        },
+        {
+            name: "showOrderBox",
+            available: false,
+            params: [
+                {
+                    name: "type",
+                    description: "",
+                    required: true,
+                    type: "object",
+                    default: ""
+                }
+            ]
+        },
+        {
+            name: "showProfilePhotoBox",
+            available: true,
+            params: [
+                {
+                    name: "photo_hash",
+                    description: "Параметр photo_hash может быть получен методом <a href=\"https://vk.com/dev/photos.saveOwnerPhoto\" target=\"_blank\">photos.saveOwnerPhoto</a>",
+                    required: true,
+                    type: "string",
+                    default: "sdf87dfhsdfdfjererhfd9"
+                }
+            ]
+        },
+        {
+            name: "resizeWindow",
+            available: true,
+            params: [
+                {
+                    name: "width",
+                    description: "Максимальное значение ширины окна — 1000 px",
+                    required: false,
+                    type: "integer",
+                    default: 500
+                },
+                {
+                    name: "height",
+                    description: "Максимальное значение высоты окна — 4050 px",
+                    required: false,
+                    type: "integer",
+                    default: 500
+                }
+            ]
+        },
+        {
+            name: "setTitle",
+            available: true,
+            params: [
+                {
+                    name: "title",
+                    description: "Новый заголовок вкладки браузера",
+                    required: true,
+                    type: "string",
+                    default: "New title"
+                }
+            ]
+        },
+        {
+            name: "setLocation",
+            available: true,
+            params: [
+                {
+                    name: "location",
+                    description: "Новый заголовок вкладки браузера",
+                    required: true,
+                    type: "string",
+                    default: "New title"
+                },
+                {
+                    name: "fireEvent",
+                    description: "Параметр fireEvent определяет, нужно ли вызывать событие onLocationChanged сразу после запуска метода",
+                    required: false,
+                    type: "bool",
+                    default: true
+                }
+            ]
+        }
+    ]
 }
 
 var VkEvents = {
