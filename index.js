@@ -46,6 +46,10 @@ var VkApi = {
 
             if(VkApi.checkTemplate(jscode)){ // СМ КОММЕНТАРИЙ К ФУНКЦИИ
                 eval(jscode);
+                Notify.generate('VK API','Запрос выполнен');
+            }
+            else {
+                Notify.generate('VK API','Ошибка валидации');
             }
         });
 
@@ -89,6 +93,8 @@ var VkApi = {
             mask = /VK.callMethod\(\"([a-zA-Z]+)\"([a-zA-Zа-яА-Я0-9\.\,\!\?\:\;\"\*\(\)]*)\)\;/;
             res = res.match(mask);
 
+        if(!res) return false;
+
         var methodName = res[1];
         var ps = res[2]; //paramsString
 
@@ -96,10 +102,10 @@ var VkApi = {
             var elem = VkApi.Methods[j];
             if(elem.name === methodName && elem.available)
             {
-                if(elem.params.length > 0)
+                if(elem.params.length > 0){
                     for(var it = 0; it < elem.params.length; it++){
                         // убираем запятую в начале
-                        if(ps[0] == ','){
+                        if(ps[0] == ',' && ps.length != 1){
                             ps = ps.substr(1);
                         } else {
                             isValid = false;
@@ -116,6 +122,8 @@ var VkApi = {
                                 break;
                             case "integer":
                                 var finish = ps.indexOf(',') == -1 ? ps.length : ps.indexOf(',');
+
+                                if( finish == 0 ) return false;
 
                                 for(var i = 0; i < finish; i++)
                                 {
@@ -142,6 +150,8 @@ var VkApi = {
                                 return false;
                         }
                     }
+                }
+                if(ps.length > 0) return false;
                 break;
             }
         }
@@ -356,11 +366,12 @@ var VkEvents = {
         if(VkEvents.isAvailable(eventname)){
             eval(document.getElementById('jscode-event').value);
             VkEvents.listen.push(eventname);
+            Notify.generate('VK Events', 'прослушивается ' + eventname);
         }
     },
     unsubscribe: (eventname) => {
         VkEvents.listen.splice( VkEvents.listen.indexOf(eventname), 1 );
-
+        Notify.generate('VK Events', eventname + ' больше не прослушивается');
         //TODO Храинлище функций обработчиков
     },
     isAvailable: (eventname) => {

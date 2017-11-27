@@ -15,10 +15,32 @@ a{
     font-weight: bolder;
 }
 
+button{
+    background-color: #323332;
+    color: #f8f9fa;
+    border: 0;
+    outline: 0;
+    padding: 5px 10px;
+    font-family: sans-serif;
+    font-size: 1em;
+    display: block;
+}
+
+.picker{
+    background-color: #f8f9fa;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    outline: 0;
+    height: 40px;
+    font-size: 1em;
+    text-align: center;
+    display: block;
+}
+
 .container_main{
     height: 500px;
     text-overflow: ellipsis;
 }
+
 #title{
     background-color: #323332;
     color: #f8f9fa;
