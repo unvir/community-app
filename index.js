@@ -411,6 +411,7 @@ window.addEventListener("load", () => {
     try{
         VK.init(function() {
             Notify.generate('JS SDK Connection', 'success');
+            alert(window.location.href);
         }, function() {
             Notify.generate('JS SDK Connection', 'fail');
         }, '5.69');
